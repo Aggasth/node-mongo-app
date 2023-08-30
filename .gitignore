@@ -1,0 +1,25 @@
+# Node.js / npm
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Dependencias específicas de MongoDB
+data/
+db/
+mongo.log
+
+# Archivos de configuración
+.env
+
+# Logs
+logs/
+*.log
+
+# Archivos generados
+*.iml
+*.swp
+.DS_Store
+Thumbs.db
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
