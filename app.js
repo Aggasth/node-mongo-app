@@ -68,4 +68,4 @@ async function addProducts(){
 }
 
 //addProducts();
-//printProducts();
+printProducts();
