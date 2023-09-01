@@ -25,7 +25,7 @@ const Product = mongoose.model('Product', productSchema); // Usamos 'Product' co
 
 app.get('/', async (req, res) => {
     try {
-        const products = await Product.find();
+        const products = await Product.find().maxTimeMS(60000);
         res.render('index',{ products });
     }catch (error) {
         console.error('Error al obtener productos:', error);
