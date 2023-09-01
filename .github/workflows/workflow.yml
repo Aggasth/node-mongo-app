@@ -19,10 +19,13 @@ jobs:
         node-version: 18
 
     - name: Instalar dependencias
-      run: npm install
+      run: | 
+        npm install
+        npm install forever -g
 
     - name: Construir y desplegar
       run: |
-        node app.js
-        pkill -f "node app.js"
+        forever start app.js
+        forever list
+        forever stop 0
       
