@@ -6,6 +6,12 @@ mongoose.connect('mongodb+srv://application:mcthHA9nvjQVwHOi@jenkinstest.rvqxmbd
     useUnifiedTopology: true
 });
 
+const tiempoEspera = 10000; // 10 segundos en milisegundos
+setTimeout(function () {
+  console.log('Se ha realizado la conexión a la base de datos.');
+  
+}, tiempoEspera);
+
 const app = express();
 app.set('view engine','ejs');
 app.use(express.static('public'));
