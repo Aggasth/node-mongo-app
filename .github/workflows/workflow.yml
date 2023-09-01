@@ -22,4 +22,5 @@ jobs:
       run: npm install
 
     - name: Construir y desplegar
-      run: node app.js
+      run: node app.js && pkill -f "node app.js"
+      
