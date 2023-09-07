@@ -16,10 +16,10 @@ pipeline {
       steps {
         script{
           // dependencias ubuntu
-          sh 'apt update'
-          sh 'apt install nodejs'
+          sh 'sudo apt update'
+          sh 'sudo apt install nodejs'
           sh 'node -v'
-          sh 'apt install npm'
+          sh 'sudo apt install npm'
           // dependencias app
           sh 'npm init -y'
           sh 'npm install express ejs mongoose'
