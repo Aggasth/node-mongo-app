@@ -1,6 +1,6 @@
 pipeline {
   agent {
-    docker { image 'ubuntu:latest' }
+    docker { image 'node:latest' }
   }
   tools {
     nodejs 'nodejs'
@@ -11,15 +11,9 @@ pipeline {
         git branch: 'main', credentialsId: '108da089-e7b0-4bdf-9770-e6f1471e9d34', url: 'https://github.com/Aggasth/node-mongo.git'
       }
     }
-
     stage('Dependencies') {
       steps {
         script{
-          // dependencias ubuntu
-          sh 'sudo apt update'
-          sh 'sudo apt install nodejs'
-          sh 'node -v'
-          sh 'sudo apt install npm'
           // dependencias app
           sh 'npm init -y'
           sh 'npm install express ejs mongoose'
