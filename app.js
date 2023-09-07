@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
 const express = require('express');
 
-mongoose.connect('mongodb+srv://application:mcthHA9nvjQVwHOi@jenkinstest.rvqxmbd.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://github:bQQxwlf0BnerRIjY@jenkinstest.rvqxmbd.mongodb.net/?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 
-const tiempoEspera = 10000; // 10 segundos en milisegundos
+const tiempoEspera = 10000; // 10 segundos de timing
 setTimeout(function () {
   console.log('Se ha realizado la conexión a la base de datos.');
-  
 }, tiempoEspera);
 
 const app = express();
@@ -21,7 +20,7 @@ const productSchema = mongoose.Schema({
     quantity: Number,
 });
 
-const Product = mongoose.model('Product', productSchema); // Usamos 'Product' como nombre de la colección
+const Product = mongoose.model('Product', productSchema);
 
 app.get('/', async (req, res) => {
     try {
@@ -48,7 +47,7 @@ async function printProducts() {
     } catch (error) {
         console.error('Error al obtener productos:', error);
     } finally {
-        mongoose.disconnect(); // Cerramos la conexión a la base de datos
+        mongoose.disconnect();
     }
 }
 
