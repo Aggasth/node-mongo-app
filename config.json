@@ -1,7 +1,7 @@
 {
     "mongodb":"mongodb+srv://github:bQQxwlf0BnerRIjY@jenkinstest.rvqxmbd.mongodb.net/?retryWrites=true&w=majority",
-    "AZURE_CLIENT_ID" : "credentials('branko.osorio@sociuschile.cl').username",
-    "AZURE_CLIENT_SECRET" : "credentials('Impaler22').password",
+    "AZURE_CLIENT_ID" : "branko.osorio@sociuschile.cl",
+    "AZURE_CLIENT_SECRET" : "Impaler22",
     "AZURE_TENANT_ID" : "'9297550c-fa07-4acd-ade0-49b8c437c2df'",
     "WEBAPP_NAME" : "'sociuswebapptest010'",
     "RESOURCE_GROUP_NAME" : "'SOCIUSRGLAB-RG-MODELODEVOPS-DEV'"
