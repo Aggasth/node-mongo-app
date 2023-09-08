@@ -3,6 +3,6 @@
     "AZURE_CLIENT_ID" : "branko.osorio@sociuschile.cl",
     "AZURE_CLIENT_SECRET" : "Impaler22",
     "AZURE_TENANT_ID" : "9297550c-fa07-4acd-ade0-49b8c437c2df",
-    "WEBAPP_NAME" : "'sociuswebapptest010'",
-    "RESOURCE_GROUP_NAME" : "'SOCIUSRGLAB-RG-MODELODEVOPS-DEV'"
+    "WEBAPP_NAME" : "sociuswebapptest010",
+    "RESOURCE_GROUP_NAME" : "SOCIUSRGLAB-RG-MODELODEVOPS-DEV"
 }
