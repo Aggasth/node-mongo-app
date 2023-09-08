@@ -1,0 +1,42 @@
+pipeline {
+  agent any
+    environment {
+        AZURE_CLIENT_ID = credentials('branko.osorio@sociuschile.cl').username
+        AZURE_CLIENT_SECRET = credentials('Impaler22').password
+        AZURE_TENANT_ID = '9297550c-fa07-4acd-ade0-49b8c437c2df'
+        WEBAPP_NAME = 'sociuswebapptest010'
+        RESOURCE_GROUP_NAME = 'SOCIUSRGLAB-RG-MODELODEVOPS-DEV'
+    }
+    stages {
+        stage('Load Config') {
+            steps {
+                script {
+                    def config = readJSON file: 'config.json'
+                    env.AZURE_CLIENT_ID = config.AZURE_CLIENT_ID
+                    env.AZURE_CLIENT_SECRET = config.AZURE_CLIENT_SECRET
+                    env.AZURE_TENANT_ID = config.AZURE_TENANT_ID
+                    env.WEBAPP_NAME = config.WEBAPP_NAME
+                    env.RESOURCE_GROUP_NAME = config.RESOURCE_GROUP_NAME
+                }
+            }
+        }
+        
+        stage('Azure Login') {
+            steps {
+                script {
+                    withAzureCredentials(env.AZURE_CLIENT_ID, env.AZURE_CLIENT_SECRET, env.AZURE_TENANT_ID, 'Azure') {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Azure') {
+            steps {
+                script {
+                    sh "az webapp restart --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME"
+                }
+            }
+        }
+    }
+}
