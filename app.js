@@ -1,15 +1,18 @@
 const mongoose = require('mongoose');
 const express = require('express');
+const fs = require('fs');
+const rawConfig = fs.readFileSync('config.json');
+const config = JSON.parse(rawConfig);
 
-mongoose.connect('mongodb+srv://github:bQQxwlf0BnerRIjY@jenkinstest.rvqxmbd.mongodb.net/?retryWrites=true&w=majority', {
+const dbUrl = config.mongodb;
+
+//process.env.MONGODB_URL || dbUrl || 
+const mongourl = process.env.MONGODB_URL || dbUrl;
+
+mongoose.connect(mongourl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
-
-const tiempoEspera = 10000; // 10 segundos de timing
-setTimeout(function () {
-  console.log('Se ha realizado la conexión a la base de datos.');
-}, tiempoEspera);
 
 const app = express();
 app.set('view engine','ejs');
@@ -24,7 +27,7 @@ const Product = mongoose.model('Product', productSchema);
 
 app.get('/', async (req, res) => {
     try {
-        const products = await Product.find().maxTimeMS(60000);
+        const products = await Product.find().maxTimeMS(20000);
         res.render('index',{ products });
     }catch (error) {
         console.error('Error al obtener productos:', error);
@@ -34,6 +37,7 @@ app.get('/', async (req, res) => {
 
 app.listen(3000, () => {
     console.log('Servidor escuchando en el puerto 3000')
+    console.log(mongourl)
 })
 
 //Funciones manuales.
@@ -65,6 +69,25 @@ async function addProducts(){
         console.error('Error al agregar productos', error);
     }
 }
+
+app.post('/add-product', async (req, res) => {
+    const { productName, productQuantity } = req.body;
+
+    try {
+        const newProduct = new Product({
+            name: productName,
+            quantity: parseInt(productQuantity)
+        });
+
+        const savedProduct = await newProduct.save();
+        console.log('Producto agregado:', savedProduct);
+
+        res.redirect('/');
+    } catch (error) {
+        console.error('Error al agregar producto:', error);
+        res.status(500).send('Error al agregar el producto.');
+    }
+});
 
 //addProducts();
 printProducts();

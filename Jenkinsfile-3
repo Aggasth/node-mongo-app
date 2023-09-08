@@ -1,0 +1,33 @@
+pipeline {
+  agent {
+    docker { image 'node:latest' }
+  }
+  tools {
+    nodejs 'nodejs'
+  }
+  environment {
+    MONGODB_URL = 'mongodb+srv://github:bQQxwlf0BnerRIjY@jenkinstest.rvqxmbd.mongodb.net/?retryWrites=true&w=majority'
+  }
+  stages{
+    stage('CheckOut') {
+      steps {
+        git branch: 'main', credentialsId: '108da089-e7b0-4bdf-9770-e6f1471e9d34', url: 'https://github.com/Aggasth/node-mongo.git'
+      }
+    }
+    stage('Dependencies') {
+      steps {
+        script{
+          // dependencias app
+          sh 'npm init -y'
+          sh 'npm install express ejs mongoose'
+        }
+      }
+    }
+
+    stage('Run App') {
+      steps {
+        sh 'node app.js'
+      }
+    }
+  }
+}

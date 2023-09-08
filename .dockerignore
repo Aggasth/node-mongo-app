@@ -15,6 +15,7 @@ environments.json
 # Logs
 logs/
 *.log
+.gitignore
 
 # Archivos generados
 *.iml
