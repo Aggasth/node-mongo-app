@@ -6,16 +6,6 @@ pipeline {
         AZURE_CREDENTIALS = credentials('d26ccfb1-4b21-49cb-bee5-bd52bd58f840')
     }
     stages {
-        stage('Install Azure') {
-            steps {
-                script {
-                    sh 'apt -y install curl gpg'
-                    sh 'curl -sL https://aka.ms/InstallAzureCLIDeb | bash'
-                    sh 'apt -y install azure-cli'
-                }
-            }
-        }
-        
         stage('Azure Login') {
             steps {
                 script {
