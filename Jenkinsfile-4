@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage('Load Git Files') {
             steps {
-                git https://github.com/Aggasth/node-mongo-app.git
+                git 'https://github.com/Aggasth/node-mongo-app.git'
             }
         }
         stage('Load Config') {
