@@ -1,25 +1,15 @@
 pipeline {
     agent any
+    environment {
+        AZURE_CREDENTIALS = credentials('d26ccfb1-4b21-49cb-bee5-bd52bd58f840')
+    }
     stages {
-        stage('Load Config') {
-            steps {
-                script {
-                    def config = readJSON file: 'config.json'
-                    env.AZURE_CLIENT_ID = config.AZURE_CLIENT_ID
-                    env.AZURE_CLIENT_SECRET = config.AZURE_CLIENT_SECRET
-                    env.AZURE_TENANT_ID = config.AZURE_TENANT_ID
-                    env.WEBAPP_NAME = config.WEBAPP_NAME
-                    env.RESOURCE_GROUP_NAME = config.RESOURCE_GROUP_NAME
-                }
-            }
-        }
-
         stage('Install Azure') {
             steps {
                 script {
-                    sh 'apt update'
                     sh 'apt -y install curl gpg'
                     sh 'curl -sL https://aka.ms/InstallAzureCLIDeb | bash'
+                    sh 'apt -y install azure-cli'
                 }
             }
         }
@@ -27,17 +17,9 @@ pipeline {
         stage('Azure Login') {
             steps {
                 script {
-                    withAzureCredentials(env.AZURE_CLIENT_ID, env.AZURE_CLIENT_SECRET, env.AZURE_TENANT_ID, 'Azure') {
-                        sh 'az login -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID'
+                    withCredentials([azureServicePrincipal(credentialsId: 'NombreDeTusCredencialesAzure', variable: 'AZURE_CREDENTIALS')]) {
+                        sh "echo '$AZURE_CREDENTIALS' | az login --service-principal --tenant <TENANT_ID> --username <CLIENT_ID> --password-stdin"
                     }
-                }
-            }
-        }
-
-        stage('Deploy to Azure') {
-            steps {
-                script {
-                    sh "az webapp start --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME"
                 }
             }
         }
