@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        docker { image 'bitnami/azure-cli'}
+    }
     environment {
         AZURE_CREDENTIALS = credentials('d26ccfb1-4b21-49cb-bee5-bd52bd58f840')
     }
