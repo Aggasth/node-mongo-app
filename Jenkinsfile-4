@@ -3,21 +3,6 @@ pipeline {
         dockerfile { args '--privileged --network=host'}
     }
     stages {
-        //stage('Dependencies') {
-        //    steps {
-        //        script{
-        //            sh 'npm init -y'
-        //            sh 'npm install express ejs mongoose'
-        //        }
-        //    }
-        //}
-
-        //stage('Run App') {
-        //    steps {
-        //        sh 'node app.js'
-        //    }
-        //}
-        
         stage('Azure Login') {
             steps {
                 script {

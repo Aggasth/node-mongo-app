@@ -10,7 +10,6 @@ mongo.log
 
 # Archivos de configuración
 .env
-environments.json
 
 # Logs
 logs/
@@ -25,3 +24,6 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#Archivos de Configuración
+config.json

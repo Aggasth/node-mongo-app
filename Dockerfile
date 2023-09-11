@@ -22,5 +22,5 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 # Expone el puerto en el que la aplicación escucha
 EXPOSE 3000
 
-# Comando para iniciar la aplicación
+# Inicia la app
 CMD ["node", "app.js"]
