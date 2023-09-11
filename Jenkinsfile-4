@@ -3,6 +3,11 @@ pipeline {
         docker { image 'atejada1127/azure-cli-kubectl'}
     }
     stages {
+        stage('Load Git Files') {
+            steps {
+                git https://github.com/Aggasth/node-mongo-app.git
+            }
+        }
         stage('Load Config') {
             steps {
                 script {
