@@ -19,6 +19,11 @@ pipeline {
         //}
         
         stage('Azure Login') {
+            parameters {
+                string(name:'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'Plan del servicio')
+                string(name:'APP_NAME',defaultValue:'sociuswebapptest010',description:'Nombre de la webapp')
+                string(name:'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'Grupo de recursos')
+            }
             steps {
                 script {
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
@@ -28,12 +33,5 @@ pipeline {
                 }
             }
         }
-    }
-    parameters {
-        string(name:'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'')
-        string(name:'APP_NAME',defaultValue:'sociuswebapptest010',description:'')
-        string(name:'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'')
-        string(name:'ENV',defaultValue:'',description:'')
-        
     }
 }
