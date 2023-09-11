@@ -13,6 +13,12 @@ RUN npm install && npm install mongoose
 # Copia el resto de los archivos de la aplicación al directorio de trabajo
 COPY . .
 
+# Instala el Azure-Cli
+RUN apt-get update && apt-get install -y \
+    curl zip 
+CMD /bin/bash
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
 # Expone el puerto en el que la aplicación escucha
 EXPOSE 3000
 
