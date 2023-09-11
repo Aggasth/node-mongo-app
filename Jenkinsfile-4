@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker { image 'bitnami/azure-cli'}
+        docker { image 'atejada1127/azure-cli-kubectl'}
     }
     stages {
         stage('Load Config') {
