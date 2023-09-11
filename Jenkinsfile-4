@@ -19,7 +19,9 @@ pipeline {
         stage('Install Azure') {
             steps {
                 script {
-                    sh 'curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
+                    sh 'apt update'
+                    sh 'apt -y install curl gpg'
+                    sh 'curl -sL https://aka.ms/InstallAzureCLIDeb | bash'
                 }
             }
         }
@@ -37,7 +39,7 @@ pipeline {
         stage('Deploy to Azure') {
             steps {
                 script {
-                    sh "az webapp restart --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME"
+                    sh "az webapp start --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME"
                 }
             }
         }
