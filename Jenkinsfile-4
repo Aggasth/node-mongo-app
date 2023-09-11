@@ -9,7 +9,7 @@ pipeline {
         stage('Azure Login') {
             steps {
                 script {
-                    withCredentials([azureServicePrincipal(credentialsId: 'NombreDeTusCredencialesAzure', variable: 'AZURE_CREDENTIALS')]) {
+                    withCredentials([azureServicePrincipal(credentialsId: 'd26ccfb1-4b21-49cb-bee5-bd52bd58f840', variable: 'AZURE_CREDENTIALS')]) {
                         sh "echo '$AZURE_CREDENTIALS' | az login --service-principal --tenant <TENANT_ID> --username <CLIENT_ID> --password-stdin"
                     }
                 }
