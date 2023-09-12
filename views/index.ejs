@@ -26,20 +26,24 @@
     </header>
     <div class="row h-100">
         <div class="container mt-3 bg-light">
-            <div class="col-12 text-center mb-3">
-                <h3>Listado de Productos</h3>
-            </div>
-            <div class="col-12">
-                <h2>Agregar Nuevo Producto</h2>
-                <form action="/add-product" method="POST">
-                    <label for="productName">Nombre del Producto:</label>
-                    <input type="text" id="productName" name="productName" required>
-                    <br>
-                    <label for="productQuantity">Cantidad:</label>
-                    <input type="number" id="productQuantity" name="productQuantity" required>
-                    <br>
-                    <button type="submit">Agregar Producto</button>
+            
+            <div class="col-12 text-center justify-content-center">
+                <h3>Agregar Nuevo Producto</h3>
+                <form action="/add-product" method="post">
+                    <div class="mb-3 ml-5 mr-5">
+                        <label for="productName" class="form-label">Nombre del Producto:</label>
+                        <input type="text" class="form-control" id="productName" name="productName" required> 
+                    </div>
+                    <div class="mb-3 ml-5 mr-5">
+                        <label class="form-label" for="productQuantity">Cantidad:</label>
+                        <input class="form-control" type="number" id="productQuantity" name="productQuantity" required>
+                    </div>
+                    <button class="btn btn-success" type="submit">Agregar Producto</button>
                 </form>
+            </div>
+            <br>
+            <div class="col-12 text-start mb-3 mt-5">
+                <h4>Listado de Productos</h4>
             </div>
             <div class="col-12">
                 <table class="table table-dark table-striped-columns">

@@ -17,6 +17,8 @@ mongoose.connect(mongourl, {
 const app = express();
 app.set('view engine','ejs');
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+
 
 const productSchema = mongoose.Schema({
     name: String,
@@ -27,11 +29,29 @@ const Product = mongoose.model('Product', productSchema);
 
 app.get('/', async (req, res) => {
     try {
-        const products = await Product.find().maxTimeMS(20000);
+        const products = await Product.find();
         res.render('index',{ products });
     }catch (error) {
         console.error('Error al obtener productos:', error);
         res.render('index', { products: [] });
+    }
+});
+app.post('/add-product', async (req, res) => {
+    const { productName, productQuantity } = req.body;
+
+    try {
+        const newProduct = new Product({
+            name: productName,
+            quantity: parseInt(productQuantity)
+        });
+
+        const savedProduct = await newProduct.save();
+        console.log('Producto agregado:', savedProduct);
+
+        res.redirect('/');
+    } catch (error) {
+        console.error('Error al agregar producto:', error);
+        res.status(500).send('Error al agregar el producto.');
     }
 });
 
@@ -51,7 +71,7 @@ async function printProducts() {
     } catch (error) {
         console.error('Error al obtener productos:', error);
     } finally {
-        mongoose.disconnect();
+        //mongoose.disconnect();
     }
 }
 
@@ -70,24 +90,6 @@ async function addProducts(){
     }
 }
 
-app.post('/add-product', async (req, res) => {
-    const { productName, productQuantity } = req.body;
-
-    try {
-        const newProduct = new Product({
-            name: productName,
-            quantity: parseInt(productQuantity)
-        });
-
-        const savedProduct = await newProduct.save();
-        console.log('Producto agregado:', savedProduct);
-
-        res.redirect('/');
-    } catch (error) {
-        console.error('Error al agregar producto:', error);
-        res.status(500).send('Error al agregar el producto.');
-    }
-});
 
 //addProducts();
 printProducts();
