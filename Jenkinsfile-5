@@ -10,7 +10,7 @@ pipeline {
                 script {
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh 'az webapp create -p $PLAN -n $APP_NAME -g $RES_GRP -i bosorio.azurecr.io/mongo-store'
+                        sh 'az webapp create -p $PLAN -n $APP_NAME -g $RES_GRP -i bosorio.azurecr.io/mongo-store:1.1'
                     }
                 }
             }
@@ -18,7 +18,7 @@ pipeline {
     }
     parameters {
         string(name:'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'Plan del servicio')
-        string(name:'APP_NAME',defaultValue:'sociuswebapptest012',description:'Nombre de la webapp')
+        string(name:'APP_NAME',defaultValue:'sociuswebapptest010',description:'Nombre de la webapp')
         string(name:'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'Grupo de recursos')
     }
 }
