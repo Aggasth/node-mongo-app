@@ -17,7 +17,7 @@ pipeline {
                     sh "${dockerTool}/bin/docker tag aggasth/mongo-store:1.3 bosorio.azurecr.io/mongo-store:1.3"
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh 'az acr login -u $azureUs_USR -p $azureUs_PSW -n bosorio'
+                        sh 'az acr login --expose-token -n bosorio'
                         sh '${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:1.3'
                         sh '${dockerTool}/bin/docker logout'
                         echo '|-------- Image Push Realizado Correctamente --------|' 
