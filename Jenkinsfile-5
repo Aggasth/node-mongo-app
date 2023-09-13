@@ -7,6 +7,7 @@ pipeline {
             environment {
                     dockerTool = tool 'docker'
                     dockerHub = credentials('BrankoDockerHub')
+                    azureUs = credentials('BrankoAzureLogin')
                 }
             steps {
                 script {
@@ -16,23 +17,12 @@ pipeline {
                     sh "${dockerTool}/bin/docker tag aggasth/mongo-store:1.3 bosorio.azurecr.io/mongo-store:1.3"
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh '${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:1.3'
-                        sh 'az acr login -n bosorio'
+                        sh 'az acr login -u $azureUs_USR -p $azureUs_PSW -n bosorio'
                         sh '${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:1.3'
                         sh '${dockerTool}/bin/docker logout'
                         echo '|-------- Image Push Realizado Correctamente --------|' 
+                        sh 'az webapp config container set --name $APP_NAME --resource-group $RES_GRP --docker-custom-image-name bosorio.azurecr.io/mongo-store:1.3 --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $azureUs_USR --docker-registry-server-password $azureUs_PSW'
                     }
-                }
-            }
-        }
-
-        stage('Webapp Update') {
-            environment {
-                azureUs = credentials('BrankoAzureLogin')
-            }
-            steps {
-                script {
-                    sh 'az webapp config container set --name $APP_NAME --resource-group $RES_GRP --docker-custom-image-name bosorio.azurecr.io/mongo-store:1.3 --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $azureUs_USR --docker-registry-server-password $azureUs_PSW'
                 }
             }
         }
