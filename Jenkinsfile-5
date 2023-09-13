@@ -13,9 +13,9 @@ pipeline {
                     sh "${dockerTool}/bin/docker login -u $dockerHub_USR -p $dockerHub_PSW"
                     sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:1.1 ."
                     sh "${dockerTool}/bin/docker push aggasth/mongo-store:1.1"
-                    sh "${dockerTool}/bin/docker logout"
                     sh "${dockerTool}/bin/docker tag mongo-store:1.1 bosorio.azurecr.io/mongo-store:1.1"
                     sh "${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:1.1"
+                    sh "${dockerTool}/bin/docker logout"
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                         sh 'az acr login --name bosorio'
