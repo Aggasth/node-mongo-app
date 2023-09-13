@@ -4,12 +4,22 @@ pipeline {
     }
     stages {
         stage('Azure Login') {
+            environment {
+                    dockerTool = tool 'docker'
+                    dockerHub = credentials('BrankoDockerHub')
+                }
             steps {
-                //La construcción y push de la imagen de docker la hice localmente
-                //El push de la imagen de docker hub a azure cr también localmente
                 script {
+                    sh "${dockerTool}/bin/docker login -u $dockerHub_USR -p $dockerHub_PSW"
+                    sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:1.1 ."
+                    sh "${dockerTool}/bin/docker push aggasth/mongo-store:1.1"
+                    sh "${dockerTool}/bin/docker logout"
+                    sh "${dockerTool} tag nodejs-webapp returngis.azurecr.io/nodejs-webapp:v1"
+                    sh "${dockerTool} push bosorio.azurecr.io/mongo-store:1.1"
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        sh 'az acr login --name bosorio'
+                        sh 'docker tag nodejs-webapp returngis.azurecr.io/nodejs-webapp:v1'
                         sh 'az webapp create -p $PLAN -n $APP_NAME -g $RES_GRP -i bosorio.azurecr.io/mongo-store:1.1'
                     }
                 }
