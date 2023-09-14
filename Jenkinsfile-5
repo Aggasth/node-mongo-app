@@ -3,7 +3,7 @@ pipeline {
         dockerfile { args '--privileged --network=host'}
     }
     tools {
-        docker 'docker'
+        dockerTool 'docker'
     }
     stages {
         stage('Azure Login & ContainerImage Push ACR') {
