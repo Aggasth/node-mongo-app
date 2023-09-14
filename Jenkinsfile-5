@@ -2,6 +2,9 @@ pipeline {
     agent {
         dockerfile { args '--privileged --network=host'}
     }
+    tools {
+        docker 'docker'
+    }
     stages {
         stage('Azure Login & ContainerImage Push ACR') {
             environment {
