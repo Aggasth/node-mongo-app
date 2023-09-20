@@ -31,6 +31,7 @@ pipeline {
         stage('Build Docker'){
             environment{
                 dockerTool = tool 'docker'
+                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
             }
             steps{
                 sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:${gitTag} ."
@@ -42,6 +43,7 @@ pipeline {
                 dockerTool = tool 'docker'
                 dockerHub = credentials('BrankoDockerHub')
                 azureUs = credentials('BrankoAzureLogin')
+                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
             }
             steps{
                 sh '${dockerTool}/bin/docker login -u $azureUs_USR -p $azureUs_PSW bosorio.azurecr.io'
@@ -57,6 +59,7 @@ pipeline {
                 dockerTool = tool 'docker'
                 dockerHub = credentials('BrankoDockerHub')
                 azureUs = credentials('BrankoAzureLogin')
+                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
             }
             steps {
                 script {
