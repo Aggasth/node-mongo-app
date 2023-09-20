@@ -50,6 +50,7 @@ pipeline {
                 sh "${dockerTool}/bin/docker tag aggasth/mongo-store:${gitTag} bosorio.azurecr.io/mongo-store:${gitTag}"
                 sh "${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:${gitTag}"
                 sh "${dockerTool}/bin/docker rmi -f aggasth/mongo-store:${gitTag}"
+                sh "${dockerTool}/bin/docker rmi -f bosorio.azurecr.io/mongo-store:${gitTag}"
                 sh '${dockerTool}/bin/docker logout'
             }
         }
