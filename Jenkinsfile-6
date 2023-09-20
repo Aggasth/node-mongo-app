@@ -1,0 +1,61 @@
+pipeline {
+    parameters {
+        string(name:'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'Plan del servicio')
+        string(name:'APP_NAME',defaultValue:'sociuswebapptest010',description:'Nombre de la webapp')
+        string(name:'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'Grupo de recursos')
+    }
+    
+    agent {
+        dockerfile { args '--privileged --network=host'}
+    }
+    
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build Docker'){
+            environment{
+                dockerTool = tool 'docker'
+            }
+            steps{
+                sh "${dockerTool}/bin/docker build -f Dockerfile -t aggasth/mongo-store:${BUILD_NUMBER} ."
+            }
+        }
+
+        stage('Push Docker Image to ACR'){
+            environment {
+                dockerTool = tool 'docker'
+                dockerHub = credentials('BrankoDockerHub')
+                azureUs = credentials('BrankoAzureLogin')
+            }
+            steps{
+                sh '${dockerTool}/bin/docker login -u $azureUs_USR -p $azureUs_PSW bosorio.azurecr.io'
+                sh "${dockerTool}/bin/docker tag aggasth/mongo-store:${BUILD_NUMBER} bosorio.azurecr.io/mongo-store:${BUILD_NUMBER}"
+                sh "${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:${BUILD_NUMBER}"
+                sh "${dockerTool}/bin/docker rmi -f aggasth/mongo-store:${BUILD_NUMBER}"
+                sh '${dockerTool}/bin/docker logout'
+            }
+        }
+
+        stage('Azure Login & ContainerImage Set ACR') {
+            environment {
+                dockerTool = tool 'docker'
+                dockerHub = credentials('BrankoDockerHub')
+                azureUs = credentials('BrankoAzureLogin')
+            }
+            steps {
+                script {
+                    withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        sh "az webapp config container set --name $APP_NAME --resource-group $RES_GRP --docker-custom-image-name bosorio.azurecr.io/mongo-store:${BUILD_NUMBER} --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $azureUs_USR --docker-registry-server-password $azureUs_PSW"
+                        echo '- Imagen de Contenedor modificada correctamente -'
+                    }
+                }
+            }
+        }
+        
+    }
+}

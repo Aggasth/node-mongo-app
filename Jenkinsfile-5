@@ -1,14 +1,27 @@
 pipeline {
+    parameters {
+        string(name:'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'Plan del servicio')
+        string(name:'APP_NAME',defaultValue:'sociuswebapptest010',description:'Nombre de la webapp')
+        string(name:'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'Grupo de recursos')
+    }
+    
     agent {
         dockerfile { args '--privileged --network=host'}
     }
+    
     stages {
+        stage('Install') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
         stage('Azure Login & ContainerImage Push ACR') {
             environment {
-                    dockerTool = tool 'docker'
-                    dockerHub = credentials('BrankoDockerHub')
-                    azureUs = credentials('BrankoAzureLogin')
-                }
+                dockerTool = tool 'docker'
+                dockerHub = credentials('BrankoDockerHub')
+                azureUs = credentials('BrankoAzureLogin')
+            }
             steps {
                 script {
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
@@ -29,10 +42,6 @@ pipeline {
                 }
             }
         }
-    }
-    parameters {
-        string(name:'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'Plan del servicio')
-        string(name:'APP_NAME',defaultValue:'sociuswebapptest010',description:'Nombre de la webapp')
-        string(name:'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'Grupo de recursos')
+        
     }
 }
