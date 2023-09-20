@@ -33,7 +33,7 @@ pipeline {
                 dockerTool = tool 'docker'
             }
             steps{
-                sh "${dockerTool}/bin/docker build -f Dockerfile -t aggasth/mongo-store:${gitTag} ."
+                sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:${gitTag} ."
             }
         }
 
