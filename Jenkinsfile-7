@@ -19,8 +19,11 @@ pipeline {
 
         stage('Obtain GitTag'){
             steps {
-                def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                echo " ** Git Tag Version: ${gitTag}"
+                script{
+                    def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                    echo " ** Git Tag Version: ${gitTag}"
+                }
+                
             }
             
         }
