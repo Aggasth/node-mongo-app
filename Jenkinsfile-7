@@ -35,6 +35,7 @@ pipeline {
             }
             steps{
                 sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:${gitTag} ."
+                echo ' ** Imagen de Docker creada correctamente.'
             }
         }
 
@@ -52,6 +53,7 @@ pipeline {
                 sh "${dockerTool}/bin/docker rmi -f aggasth/mongo-store:${gitTag}"
                 sh "${dockerTool}/bin/docker rmi -f bosorio.azurecr.io/mongo-store:${gitTag}"
                 sh '${dockerTool}/bin/docker logout'
+                echo ' ** Imagen subida a ACR correctamente.'
             }
         }
 
@@ -67,7 +69,7 @@ pipeline {
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                         sh "az webapp config container set --name $APP_NAME --resource-group $RES_GRP --docker-custom-image-name bosorio.azurecr.io/mongo-store:${gitTag} --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $azureUs_USR --docker-registry-server-password $azureUs_PSW"
-                        echo '- Imagen de Contenedor modificada correctamente -'
+                        echo ' ** Imagen de Contenedor modificada correctamente'
                     }
                 }
             }

@@ -36,6 +36,7 @@ pipeline {
                 sh "${dockerTool}/bin/docker tag aggasth/mongo-store:${BUILD_NUMBER} bosorio.azurecr.io/mongo-store:${BUILD_NUMBER}"
                 sh "${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:${BUILD_NUMBER}"
                 sh "${dockerTool}/bin/docker rmi -f aggasth/mongo-store:${BUILD_NUMBER}"
+                sh "${dockerTool}/bin/docker rmi -f bosorio.azurecr.io/mongo-store:${BUILD_NUMBER}"
                 sh '${dockerTool}/bin/docker logout'
             }
         }
