@@ -19,9 +19,9 @@ pipeline {
     stages {
         stage('Obtain GitTag & GitBranch'){
             steps {
-                script{
+                script {
                     def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                    def branchName = sh(script: "git rev-parse --abbrev-ref refs/tags/${gitTag}", returnStdout: true).trim()
+                    def branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
                     echo " ** Se creará la imagen de Docker con los siguientes parámetros:"
                     echo " ** Git Tag Version: ${gitTag}"
                     echo " ** Branch Name: ${branchName}"
