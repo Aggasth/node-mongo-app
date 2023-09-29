@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-          image 'bitnami/azure-cli'
+          image 'ismaleiva90/azure-cli'
           args '--privileged --network=host'
         }
     }
