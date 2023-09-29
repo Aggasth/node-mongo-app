@@ -1,28 +1,29 @@
 pipeline {
-  agent any
-  tools {
-    nodejs 'nodejs'
-  }
-  stages{
-    stage('CheckOut') {
-      steps {
-        git branch: 'main', credentialsId: '108da089-e7b0-4bdf-9770-e6f1471e9d34', url: 'https://github.com/Aggasth/node-mongo.git'
-      }
+    parameters {
+        string(name: 'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'Plan del servicio')
+        string(name: 'APP_NAME', description:'Nombre de la webapp', defaultValue: env.BRANCH_NAME == 'master' ? 'sociuswebapptest010' : 'sociuswebapptest011')
+        string(name: 'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'Grupo de recursos')
+        string(name: 'BRANCH', defaultValue:env.BRANCH_NAME, description: 'Valor del Ambiente')
     }
-
-    stage('Dependencies') {
-      steps {
-        script{
-          sh 'npm init -y'
-          sh 'npm install express ejs mongoose'
+    
+    agent {
+        docker {
+          image 'aggasth/ubuntu-azcli'
+          args '--privileged --network=host'
         }
-      }
     }
-
-    stage('Run App') {
-      steps {
-        sh 'node app.js'
-      }
+    
+    stages {
+        stage('Azure Login Test') {
+            steps {
+                script {
+                    withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        echo 'Conectado correctamente, el agente funciona.'
+                    }
+                }
+            }
+        }
+        
     }
-  }
 }
