@@ -8,7 +8,7 @@ pipeline {
     
     agent {
         docker {
-          image 'aggasth/ubuntu-azcli'
+          image 'bitnami/azure-cli:latest'
           args '--privileged --network=host'
         }
     }
