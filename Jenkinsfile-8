@@ -12,7 +12,10 @@ pipeline {
     }
     
     agent {
-        dockerfile { args '--privileged --network=host'}
+        docker {
+          image 'aggasth/ubuntu-azcli'
+          args '--privileged --network=host'
+        }
     }
     
     stages {
@@ -72,6 +75,7 @@ pipeline {
             }
             steps {
                 script {
+                    env.AZURE_CONFIG_DIR = "${WORKSPACE}/azure-config"
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                         sh "az webapp config container set --name $APP_NAME --resource-group $RES_GRP --docker-custom-image-name bosorio.azurecr.io/mongo-store:${gitTag}-$BRANCH --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $azureUs_USR --docker-registry-server-password $azureUs_PSW"
