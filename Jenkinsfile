@@ -15,6 +15,9 @@ pipeline {
     
     stages {
         stage('Azure Login Test') {
+            environment {
+              AZURE_CONFIG_DIR = '/ruta/permisible/.azure'
+            }
             steps {
                 script {
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
