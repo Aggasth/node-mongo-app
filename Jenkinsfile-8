@@ -33,7 +33,7 @@ pipeline {
             environment{
                 dockerTool = tool 'docker'
                 gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                branchName = sh(script: "git rev-parse --abbrev-ref refs/tags/${gitTag}", returnStdout: true).trim()
+                branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
             }
             steps{
                 sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:${gitTag}-${branchName} ."
@@ -47,7 +47,7 @@ pipeline {
                 dockerHub = credentials('BrankoDockerHub')
                 azureUs = credentials('BrankoAzureLogin')
                 gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                branchName = sh(script: "git rev-parse --abbrev-ref refs/tags/${gitTag}", returnStdout: true).trim()
+                branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
             }
             steps{
                 sh '${dockerTool}/bin/docker login -u $azureUs_USR -p $azureUs_PSW bosorio.azurecr.io'
@@ -66,7 +66,7 @@ pipeline {
                 dockerHub = credentials('BrankoDockerHub')
                 azureUs = credentials('BrankoAzureLogin')
                 gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                branchName = sh(script: "git rev-parse --abbrev-ref refs/tags/${gitTag}", returnStdout: true).trim()
+                branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
             }
             steps {
                 script {
