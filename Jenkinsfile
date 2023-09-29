@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-          image 'ismaleiva90/azure-cli'
+          image 'aggasth/ubuntu-azcli'
           args '--privileged --network=host'
         }
     }
