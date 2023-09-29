@@ -1,0 +1,85 @@
+pipeline {
+    //Usando el Tag y Branch del ultimo commit de GitHub
+    //Con esta funcion se busca que el Pipeline construya la imagen de docker usando ambos parametros
+    //Teniendo una imagen con formato image:version-branch
+    //Formato imagen ambiente dev: image:gittag-dev
+    //Formato imagen ambiente prod: image:gittag-prod
+    parameters {
+        string(name: 'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'Plan del servicio')
+        string(name: 'APP_NAME', description:'Nombre de la webapp', defaultValue: env.BRANCH_NAME == 'master' ? 'sociuswebapptest010' : 'sociuswebapptest011')
+        string(name: 'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'Grupo de recursos')
+        string(name: 'BRANCH', defaultValue:env.BRANCH_NAME, description: 'Valor del Ambiente')
+    }
+    
+    agent {
+        dockerfile { args '--privileged --network=host'}
+    }
+    
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Obtain GitTag & GitBranch'){
+            steps {
+                script{
+                    def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                    def branchName = env.BRANCH_NAME
+                    echo " ** Se creará la imagen de Docker con los siguientes parámetros:"
+                    echo " ** Git Tag Version: ${gitTag}"
+                    echo " ** Branch Name: $BRANCH"
+                }
+            }
+        }
+
+        stage('Build Docker'){
+            environment{
+                dockerTool = tool 'docker'
+                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+            }
+            steps{
+                sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:${gitTag}-$BRANCH ."
+                echo ' ** Imagen de Docker creada correctamente'
+            }
+        }
+
+        stage('Push Docker Image to ACR'){
+            environment {
+                dockerTool = tool 'docker'
+                dockerHub = credentials('BrankoDockerHub')
+                azureUs = credentials('BrankoAzureLogin')
+                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+            }
+            steps{
+                sh '${dockerTool}/bin/docker login -u $azureUs_USR -p $azureUs_PSW bosorio.azurecr.io'
+                sh "${dockerTool}/bin/docker tag aggasth/mongo-store:${gitTag}-$BRANCH bosorio.azurecr.io/mongo-store:${gitTag}-$BRANCH"
+                sh "${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:${gitTag}-$BRANCH"
+                sh "${dockerTool}/bin/docker rmi -f aggasth/mongo-store:${gitTag}-$BRANCH"
+                sh "${dockerTool}/bin/docker rmi -f bosorio.azurecr.io/mongo-store:${gitTag}-$BRANCH"
+                sh '${dockerTool}/bin/docker logout'
+                echo ' ** Imagen subida a ACR correctamente.'
+            }
+        }
+
+        stage('Azure Login & ContainerImage Set ACR') {
+            environment {
+                dockerTool = tool 'docker'
+                dockerHub = credentials('BrankoDockerHub')
+                azureUs = credentials('BrankoAzureLogin')
+                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+            }
+            steps {
+                script {
+                    withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        sh "az webapp config container set --name $APP_NAME --resource-group $RES_GRP --docker-custom-image-name bosorio.azurecr.io/mongo-store:${gitTag}-$BRANCH --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $azureUs_USR --docker-registry-server-password $azureUs_PSW"
+                        echo ' ** Imagen de Contenedor modificada correctamente'
+                    }
+                }
+            }
+        }
+        
+    }
+}
