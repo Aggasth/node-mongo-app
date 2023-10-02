@@ -10,6 +10,7 @@ mongo.log
 
 # Archivos de configuración
 .env
+config.json
 
 # Logs
 logs/
