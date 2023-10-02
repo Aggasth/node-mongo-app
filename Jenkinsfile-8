@@ -8,6 +8,11 @@ pipeline {
         string(name: 'PLAN',defaultValue:'Plan-SociusRGLABRGModeloDevOpsDockerDev',description:'Plan del servicio')
         string(name: 'RES_GRP',defaultValue:'SOCIUSRGLAB-RG-MODELODEVOPS-DEV',description:'Grupo de recursos')
     }
+
+    environment {
+        TAG_NAME = ''
+        APP_NAME = ''
+    }
     
     agent {
         docker {
@@ -20,11 +25,18 @@ pipeline {
         stage('Obtain GitTag & GitBranch'){
             steps {
                 script {
-                    def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                    def branchName = sh(script: 'git branch --contains ${gitTag}', returnStdout: true).trim()
-                    echo " ** Se creará la imagen de Docker con los siguientes parámetros:"
-                    echo " ** Git Tag Version: ${gitTag}"
-                    echo " ** Branch Name: ${branchName}"
+                    def tagName = env.CHANGE_ID
+                    if (tagName =~ /dev-.*/) {
+                        TAG_NAME = tagName.replaceAll('refs/tags/', '')
+                        APP_NAME = 'sociuswebapptest010'
+                        echo "** Desplegando en: $TAG_NAME (Dev)"
+                    } else if (tagName =~ /prod-.*/) {
+                        TAG_NAME = tagName.replaceAll('refs/tags/', '')
+                        echo "** Desplegando en: $TAG_NAME (Prod)"
+                        APP_NAME = 'sociuswebapptest011'
+                    } else {
+                        error('Etiqueta no válida. Deteniendo la ejecución de la pipeline.')
+                    }
                 }
             }
         }
@@ -32,11 +44,9 @@ pipeline {
         stage('Build Docker'){
             environment{
                 dockerTool = tool 'docker'
-                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
             }
             steps{
-                sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:${gitTag}-${branchName} ."
+                sh "${dockerTool}/bin/docker build -t aggasth/mongo-store:$TAG_NAME ."
                 echo ' ** Imagen de Docker creada correctamente'
             }
         }
@@ -46,15 +56,13 @@ pipeline {
                 dockerTool = tool 'docker'
                 dockerHub = credentials('BrankoDockerHub')
                 azureUs = credentials('BrankoAzureLogin')
-                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
             }
             steps{
                 sh '${dockerTool}/bin/docker login -u $azureUs_USR -p $azureUs_PSW bosorio.azurecr.io'
-                sh "${dockerTool}/bin/docker tag aggasth/mongo-store:${gitTag}-${branchName} bosorio.azurecr.io/mongo-store:${gitTag}-${branchName}"
-                sh "${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:${gitTag}-${branchName}"
-                sh "${dockerTool}/bin/docker rmi -f aggasth/mongo-store:${gitTag}-${branchName}"
-                sh "${dockerTool}/bin/docker rmi -f bosorio.azurecr.io/mongo-store:${gitTag}-${branchName}"
+                sh "${dockerTool}/bin/docker tag aggasth/mongo-store:$TAG_NAME bosorio.azurecr.io/mongo-store:$TAG_NAME"
+                sh "${dockerTool}/bin/docker push bosorio.azurecr.io/mongo-store:$TAG_NAME"
+                sh "${dockerTool}/bin/docker rmi -f aggasth/mongo-store:$TAG_NAME"
+                sh "${dockerTool}/bin/docker rmi -f bosorio.azurecr.io/mongo-store:$TAG_NAME"
                 sh '${dockerTool}/bin/docker logout'
                 echo ' ** Imagen subida a ACR correctamente.'
             }
@@ -65,24 +73,13 @@ pipeline {
                 dockerTool = tool 'docker'
                 dockerHub = credentials('BrankoDockerHub')
                 azureUs = credentials('BrankoAzureLogin')
-                gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
             }
             steps {
                 script {
                     env.AZURE_CONFIG_DIR = "${WORKSPACE}/azure-config"
-
-                    if (branchName == 'master') {
-                        def APP_NAME = 'sociuswebapptest010'
-                    } else if (branchName == 'dev') {
-                        def APP_NAME = 'sociuswebapptest011'
-                    } else {
-                        echo 'ERROR AL SELECCIONAR LA RAMA, NO PERTENECE A NINGUN DEPARTAMENTO'
-                    }
-                    
                     withCredentials(bindings: [azureServicePrincipal('devServicePrincipal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh "az webapp config container set --name $APP_NAME --resource-group $RES_GRP --docker-custom-image-name bosorio.azurecr.io/mongo-store:${gitTag}-${branchName} --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $azureUs_USR --docker-registry-server-password $azureUs_PSW"
+                        sh "az webapp config container set --name $APP_NAME --resource-group $RES_GRP --docker-custom-image-name bosorio.azurecr.io/mongo-store:$TAG_NAME --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $azureUs_USR --docker-registry-server-password $azureUs_PSW"
                         echo ' ** Imagen de Contenedor modificada correctamente'
                     }
                 }
