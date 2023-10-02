@@ -22,7 +22,7 @@ pipeline {
     }
     
     stages {
-        stage(){
+        stage('Print ENV'){
             steps {
                 sh 'env'
             }
