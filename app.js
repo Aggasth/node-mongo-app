@@ -7,7 +7,6 @@ const config = JSON.parse(rawConfig);
 
 const dbUrl = config.mongodb;
 
-//process.env.MONGODB_URL || dbUrl || 
 const mongourl = process.env.MONGODB_URL || dbUrl;
 
 mongoose.connect(mongourl, {
