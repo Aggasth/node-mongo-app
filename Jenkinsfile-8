@@ -62,6 +62,7 @@ pipeline {
                 dockerTool = tool 'docker'
                 dockerHub = credentials('BrankoDockerHub')
                 azureUs = credentials('BrankoAzureLogin')
+                HOME = "${env.WORKSPACE}"
             }
             steps{
                 sh '${dockerTool}/bin/docker login -u $azureUs_USR -p $azureUs_PSW bosorio.azurecr.io'
