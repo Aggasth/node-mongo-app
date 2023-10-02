@@ -30,21 +30,22 @@ pipeline {
         stage('Obtain GitTag & GitBranch'){
             steps {
                 script {
-                    def tagName = env.CHANGE_ID
-                    if (tagName =~ /dev-.*/) {
-                        TAG_NAME = tagName.replaceAll('refs/tags/', '')
+                    def gitBranch = env.GIT_BRANCH
+                    if (gitBranch =~ /dev-.*/) {
+                        TAG_NAME = gitBranch.replaceAll('origin/tags/', '')
                         APP_NAME = 'sociuswebapptest010'
                         echo "** Desplegando en: $TAG_NAME (Dev)"
-                    } else if (tagName =~ /prod-.*/) {
-                        TAG_NAME = tagName.replaceAll('refs/tags/', '')
-                        echo "** Desplegando en: $TAG_NAME (Prod)"
+                    } else if (gitBranch =~ /prod-.*/) {
+                        TAG_NAME = gitBranch.replaceAll('origin/tags/', '')
                         APP_NAME = 'sociuswebapptest011'
+                        echo "** Desplegando en: $TAG_NAME (Prod)"
                     } else {
                         error('Etiqueta no válida. Deteniendo la ejecución de la pipeline.')
                     }
                 }
             }
         }
+
 
         stage('Build Docker'){
             environment{
