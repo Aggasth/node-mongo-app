@@ -11,6 +11,13 @@ pool: Windows
 steps:
 - checkout: self
   fetchDepth: 0
+
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '11'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'SonarCloud'
@@ -33,9 +40,6 @@ steps:
   inputs:
     jdkversion: 'JAVA_HOME'
 
-- task: SonarCloudAnalyze@1
-  inputs:
-    jdkversion: 'JAVA_HOME_17_X64'
 - task: SonarCloudPublish@1
   inputs:
     pollingTimeoutSec: '300'
