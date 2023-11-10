@@ -29,3 +29,9 @@ steps:
     npm install
     node app.js
   displayName: 'npm install and build'
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
+  displayName: 'Publish SonarCloud Report'
+  
