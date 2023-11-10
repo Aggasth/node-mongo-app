@@ -30,12 +30,3 @@ steps:
     npm install
     node app.js
   displayName: 'npm install and build'
-- task: SonarCloudAnalyze@1
-  inputs:
-    jdkversion: 'JAVA_HOME_17_X64'
-  displayName: 'SonarCloud Analize'
-
-- task: SonarCloudPublish@1
-  inputs:
-    pollingTimeoutSec: '300'
-  displayName: 'SonarCloud Publish'
