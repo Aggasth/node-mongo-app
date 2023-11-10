@@ -18,8 +18,8 @@ steps:
     organization: 'brankoosorio'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: 'brankoosorio_AZ-400-Boards-Lab'
-    cliProjectName: 'AZ-400-Boards-Lab'
+    cliProjectKey: 'brankoosorio_node-mongo-app.git'
+    cliProjectName: 'node-mongo-app.git'
     cliSources: '.'
 - task: NodeTool@0
   inputs:
