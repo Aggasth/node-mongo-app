@@ -53,13 +53,12 @@ steps:
 
 - task: BuildAndPushImage
   displayName: 'Build and Push Docker Image'
-  pool:
-    vmImage: 'windows-latest'
+  pool: Windows
   steps:
   - task: Docker@2
     inputs:
-      containerRegistry: 'yourAcrServiceConnectionName'  # Reemplaza esto con el nombre de tu conexión de servicio de Azure Container Registry
-      repository: 'yourAcrName.azurecr.io/yourImageName'  # Reemplaza esto con el nombre de tu registro de contenedores y la imagen
+      containerRegistry: 'bosorio.azurecr.io'
+      repository: 'bosorio.azurecr.io/ado-test'  # Reemplaza esto con el nombre de tu registro de contenedores y la imagen
       command: 'buildAndPush'
       Dockerfile: '**/Dockerfile'
       tags: 'latest'
