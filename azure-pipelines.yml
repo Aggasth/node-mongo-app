@@ -12,6 +12,8 @@ steps:
 - checkout: self
   fetchDepth: 0
 
+# ... (tu pipeline existente)
+
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'SonarCloud'
@@ -21,6 +23,7 @@ steps:
     cliProjectKey: 'brankoosorio_node-mongo-app.git'
     cliProjectName: 'node-mongo-app.git'
     cliSources: '.'
+
 - task: NodeTool@0
   inputs:
     versionSource: 'spec'
@@ -38,12 +41,25 @@ steps:
     set JAVA_HOME=C:\Program Files\Java\jdk-11
     echo "JAVA_HOME is now $JAVA_HOME"
   displayName: 'Set JAVA_HOME'
+
 - task: SonarCloudAnalyze@1
   inputs:
     jdkversion: 'JAVA_HOME'
-  
+
 - task: SonarCloudPublish@1
   inputs:
     pollingTimeoutSec: '300'
   displayName: 'Publish SonarCloud Report'
-  
+
+- task: BuildAndPushImage
+  displayName: 'Build and Push Docker Image'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: Docker@2
+    inputs:
+      containerRegistry: 'yourAcrServiceConnectionName'  # Reemplaza esto con el nombre de tu conexión de servicio de Azure Container Registry
+      repository: 'yourAcrName.azurecr.io/yourImageName'  # Reemplaza esto con el nombre de tu registro de contenedores y la imagen
+      command: 'buildAndPush'
+      Dockerfile: '**/Dockerfile'
+      tags: 'latest'
