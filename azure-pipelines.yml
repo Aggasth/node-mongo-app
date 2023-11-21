@@ -2,10 +2,13 @@ trigger:
 - master
 
 pool:
-  name: Agent_Windows_Branko  # Asegúrate de que este sea el nombre correcto de tu pool de agentes
+  name: Agent_Windows_Branko
 
 variables:
   JAVA_HOME: 'C:\\Program Files\\Java\\jdk-11'
+  APP_NAME: 'sociuswebapptest011'
+  RES_GRP: 'SOCIUSRGLAB-RG-MODELODEVOPS-DEV'
+
 
 steps:
 - checkout: self
@@ -21,4 +24,36 @@ steps:
     npm install
     node app.js
   displayName: 'npm install and build'
+
+- task: CmdLine@2
+  inputs:
+    script: 'docker login -u $(azureUSR) -p $(azurePSW) bosorio.azurecr.io'
+  displayName: 'Loggin to ACR'
+
+- task: CmdLine@2
+  inputs:
+    script: 'docker tag aggasth/mongo-store:ado-$(Build.BuildId) bosorio.azurecr.io/mongo-store:ado-$(Build.BuildId)'
+  displayName: 'Tag to docker image'
+- task: CmdLine@2
+  inputs:
+    script: 'docker push bosorio.azurecr.io/mongo-store:ado-$(Build.BuildId)'
+  displayName: 'Push to ACR'
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      docker rmi -f bosorio.azurecr.io/mongo-store:ado-$(Build.BuildId)
+      
+      docker rmi -f aggasth/mongo-store:ado-$(Build.BuildId)
+
+      docker logout
+  displayName: 'Remove images & containers from agent'
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+
+      az webapp config container set --name $(APP_NAME) --resource-group $(RES_GRP) --docker-custom-image-name bosorio.azurecr.io/mongo-store:ado-$(Build.BuildId) --docker-registry-server-url https://bosorio.azurecr.io --docker-registry-server-user $(azureUSR) --docker-registry-server-password $(azurePSW)
+  displayName: 'Azure Login & Setup new image to webapp service'
 
