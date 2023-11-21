@@ -32,6 +32,10 @@ steps:
 
 - task: CmdLine@2
   inputs:
+    script: 'docker build -t aggasth/mongo-store:ado-$(Build.BuildId)'
+  displayName: 'Docker build image'
+- task: CmdLine@2
+  inputs:
     script: 'docker tag aggasth/mongo-store:ado-$(Build.BuildId) bosorio.azurecr.io/mongo-store:ado-$(Build.BuildId)'
   displayName: 'Tag to docker image'
 - task: CmdLine@2
