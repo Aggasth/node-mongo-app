@@ -30,21 +30,16 @@ steps:
 
 - task: DockerCompose@0
   inputs:
-    containerregistrytype: 'Azure Container Registry'
-    azureSubscription: 'modelodevopservicesprincipal'
-    azureContainerRegistry: 'bosorio.azurecr.io'
+    containerregistrytype: 'Container Registry'
+    dockerRegistryEndpoint: 'serviceconnection'
     dockerComposeFile: '**/docker-compose.yml'
     action: 'Build services'
     additionalImageTags: 'az-img'
-    qualifyImageNames: true
     includeLatestTag: true
 
 - task: Docker@2
   inputs:
-    containerRegistry: 'bosorio.azurecr.io'
-    repository: 'az-imagetest'
+    containerRegistry: 'serviceconnection'
+    repository: 'bosorio.azurecr.io/test-ado'
     command: 'push'
-    qualifyImageName: true
-    includeLatestTag: true
-    azureSubscriptionEndpoint: 'modelodevopservicesprincipal'
-    displayName: 'Push Docker Image to ACR'
+
