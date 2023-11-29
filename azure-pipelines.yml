@@ -26,6 +26,11 @@ steps:
     node app.js
   displayName: 'npm install and build'
 
+- task: Docker@2
+  inputs:
+    containerRegistry: 'serviceconnection'
+    command: 'login'
+
 - task: CmdLine@2
   inputs:
     script: 'docker login -u $(azureUSR) -p $(azurePSW) bosorio.azurecr.io'
